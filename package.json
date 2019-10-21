@@ -1,0 +1,19 @@
+{
+  "name": "cdk-deployment-strategies",
+  "version": "0.1.0",
+  "scripts": {
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.1",
+    "aws-cdk": "^1.13.1",
+    "ts-node": "^8.1.0",
+    "typescript": "~3.6.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda": "^1.13.1",
+    "@aws-cdk/aws-s3-assets": "^1.13.1",
+    "@aws-cdk/core": "^1.13.1",
+    "source-map-support": "^0.5.9"
+  }
+}
