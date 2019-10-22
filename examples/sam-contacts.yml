@@ -1,35 +1,29 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Runtime: nodejs10.x
+    Environment:
+      Variables:
+        TABLE_NAME:
+          Ref: ContactTable
+    AutoPublishAlias: live
+    DeploymentPreference:
+      Type: Linear10PercentEvery1Minute
 Resources:
   ContactTable:
     Type: AWS::Serverless::SimpleTable
-  CreateContact:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: nodejs10.x
-      CodeUri: ../crud_code
-      Handler: index.create
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref ContactTable
-      Events:
-        Route:
-          Type: Api
-          Properties:
-            Path: /contacts
-            Method: POST
   ListContacts:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: nodejs10.x
       CodeUri: ../crud_code
       Handler: index.list
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref ContactTable
       Events:
         Route:
           Type: Api
           Properties:
             Path: /contacts
             Method: GET
+            # Uncomment for API v2
+            # Auth:
+            #   ApiKeyRequired: true

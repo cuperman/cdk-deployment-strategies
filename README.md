@@ -1,4 +1,4 @@
-  # CloudFormation Deployment Strategies
+# CloudFormation Deployment Strategies
 
 ## What does SAM do?
 
@@ -41,6 +41,10 @@ aws cloudformation execute-change-set \
   --change-set-name SamContacts2 \
   --profile jeff
 ```
+
+### How does api key authentication work?
+
+### How are versions managed??
 
 ## CDK Equivalent
 
