@@ -6,13 +6,29 @@ Globals:
     Environment:
       Variables:
         TABLE_NAME:
-          Ref: ContactTable
+          Ref: Contacts
     AutoPublishAlias: live
     DeploymentPreference:
-      Type: Linear10PercentEvery1Minute
+      Type: Canary10Percent5Minutes
+  Api:
+    Name: ContactsApiSam
+    # Uncomment to require API key (example API change)
+    # Auth:
+    #   ApiKeyRequired: true
 Resources:
-  ContactTable:
+  Contacts:
     Type: AWS::Serverless::SimpleTable
+  CreateContact:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../crud_code
+      Handler: index.create
+      Events:
+        Route:
+          Type: Api
+          Properties:
+            Path: /contacts
+            Method: POST
   ListContacts:
     Type: AWS::Serverless::Function
     Properties:
@@ -24,6 +40,4 @@ Resources:
           Properties:
             Path: /contacts
             Method: GET
-            # Uncomment for API v2
-            # Auth:
-            #   ApiKeyRequired: true
+            

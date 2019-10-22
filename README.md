@@ -1,5 +1,11 @@
 # CloudFormation Deployment Strategies
 
+## Blue/Green vs Canary
+
+[https://dev.to/mostlyjason/intro-to-deployment-strategies-blue-green-canary-and-more-3a3](https://dev.to/mostlyjason/intro-to-deployment-strategies-blue-green-canary-and-more-3a3)
+
+## CodeDeploy
+
 ## What does SAM do?
 
 SAM uses lambda aliases and CodeDeploy to roll out changes to lambda functions, which can be rolled back on test failures or cloudwatch alarms.
@@ -9,13 +15,13 @@ Take a look at [Safe Lambda deployments](https://github.com/awslabs/serverless-a
 ```bash
 aws cloudformation package \
   --template-file ./examples/sam-contacts.yml \
-  --output-template-file ./sam-contacts-out.yml \
+  --output-template-file ./sam.out/sam-contacts.yml \
   --s3-bucket jeffws-templates \
   --profile jeff
 
 aws cloudformation deploy \
-  --template-file ./sam-contacts-out.yml \
-  --stack-name SamContacts \
+  --template-file ./sam.out/sam-contacts.yml \
+  --stack-name ContactsApiSam \
   --capabilities CAPABILITY_IAM \
   --profile jeff
 ```
@@ -25,20 +31,20 @@ Or with change sets
 ```bash
 aws cloudformation package \
   --template-file ./examples/sam-contacts.yml \
-  --output-template-file ./sam-contacts-out.yml \
+  --output-template-file ./sam.out/sam-contacts.yml \
   --s3-bucket jeffws-templates \
   --profile jeff
 
 aws cloudformation create-change-set \
-  --template-body file://sam-contacts-out.yml \
-  --stack-name SamContacts \
-  --change-set-name SamContacts2 \
+  --template-body file://sam.out/sam-contacts.yml \
+  --stack-name ContactsApiSam \
+  --change-set-name ContactsApiSam1 \
   --capabilities CAPABILITY_IAM \
   --profile jeff
 
 aws cloudformation execute-change-set \
-  --stack-name SamContacts \
-  --change-set-name SamContacts2 \
+  --stack-name ContactsApiSam \
+  --change-set-name ContactsApiSam1 \
   --profile jeff
 ```
 
@@ -48,7 +54,12 @@ aws cloudformation execute-change-set \
 
 ## CDK Equivalent
 
-TBD
+Run it: `cdk --profile jeff --app 'npx ts-node ./examples/cdk-contacts.ts' deploy`
+
+### Demo
+
+* Updating the lambda code triggers a blue/green deploy
+* Updating the stack without code changes returns quickly without blue/green deploy
 
 ## New Concepts
 
