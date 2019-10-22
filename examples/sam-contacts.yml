@@ -2,14 +2,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Globals:
   Function:
-    Runtime: nodejs10.x
+    Runtime: nodejs8.10
     Environment:
       Variables:
         TABLE_NAME:
           Ref: Contacts
-    AutoPublishAlias: live
-    DeploymentPreference:
-      Type: Canary10Percent5Minutes
+    # AutoPublishAlias: live
+    # DeploymentPreference:
+    #   Type: Canary10Percent5Minutes
   Api:
     Name: ContactsApiSam
     # Uncomment to require API key (example API change)
@@ -23,6 +23,7 @@ Resources:
     Properties:
       CodeUri: ../crud_code
       Handler: index.create
+      Policies: AmazonDynamoDBFullAccess
       Events:
         Route:
           Type: Api
@@ -34,10 +35,47 @@ Resources:
     Properties:
       CodeUri: ../crud_code
       Handler: index.list
+      Policies: AmazonDynamoDBFullAccess
       Events:
         Route:
           Type: Api
           Properties:
             Path: /contacts
             Method: GET
+  GetContact:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../crud_code
+      Handler: index.get
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        Route:
+          Type: Api
+          Properties:
+            Path: /contacts/{id}
+            Method: GET
+  UpdateContact:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../crud_code
+      Handler: index.update
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        Route:
+          Type: Api
+          Properties:
+            Path: /contacts/{id}
+            Method: PATCH
+  DeleteContact:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../crud_code
+      Handler: index.delete
+      Policies: AmazonDynamoDBFullAccess
+      Events:
+        Route:
+          Type: Api
+          Properties:
+            Path: /contacts/{id}
+            Method: DELETE
             

@@ -17,7 +17,7 @@ class MyStack extends Stack {
     });
 
     const myFunction = new Function(this, 'MyFunction', {
-      runtime: Runtime.NODEJS_10_X,
+      runtime: Runtime.NODEJS_8_10,
       code: Code.fromBucket(myAsset.bucket, myAsset.s3ObjectKey),
       handler: 'hello.handler'
     });

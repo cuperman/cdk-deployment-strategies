@@ -94,7 +94,7 @@ class ContactsApiStack extends Stack {
     });
 
     const listContacts = canaryDeploymentGroup.addCanaryFunction('ListContacts', {
-      runtime: Runtime.NODEJS_10_X,
+      runtime: Runtime.NODEJS_8_10,
       code: Code.fromBucket(contactsHandler.bucket, contactsHandler.s3ObjectKey),
       handler: 'index.list',
       environment: {

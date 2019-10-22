@@ -29,7 +29,7 @@ class ContactsApiStack extends Stack {
     });
 
     const listContacts = new Function(this, 'ListContacts', {
-      runtime: Runtime.NODEJS_10_X,
+      runtime: Runtime.NODEJS_8_10,
       code: Code.fromBucket(contactsHandler.bucket, contactsHandler.s3ObjectKey),
       handler: 'index.list',
       environment: {
