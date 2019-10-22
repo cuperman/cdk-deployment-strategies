@@ -6,8 +6,6 @@ SAM uses lambda aliases and CodeDeploy to roll out changes to lambda functions, 
 
 Take a look at [Safe Lambda deployments](https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst).
 
-## CDK Equivalent
-
 ```bash
 aws cloudformation package \
   --template-file ./examples/sam-contacts.yml \
@@ -21,6 +19,32 @@ aws cloudformation deploy \
   --capabilities CAPABILITY_IAM \
   --profile jeff
 ```
+
+Or with change sets
+
+```bash
+aws cloudformation package \
+  --template-file ./examples/sam-contacts.yml \
+  --output-template-file ./sam-contacts-out.yml \
+  --s3-bucket jeffws-templates \
+  --profile jeff
+
+aws cloudformation create-change-set \
+  --template-body file://sam-contacts-out.yml \
+  --stack-name SamContacts \
+  --change-set-name SamContacts2 \
+  --capabilities CAPABILITY_IAM \
+  --profile jeff
+
+aws cloudformation execute-change-set \
+  --stack-name SamContacts \
+  --change-set-name SamContacts2 \
+  --profile jeff
+```
+
+## CDK Equivalent
+
+TBD
 
 ## New Concepts
 
