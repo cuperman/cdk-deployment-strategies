@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  ContactTable:
+    Type: AWS::Serverless::SimpleTable
+  CreateContact:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs10.x
+      CodeUri: ../crud_code
+      Handler: index.create
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref ContactTable
+      Events:
+        Route:
+          Type: Api
+          Properties:
+            Path: /contacts
+            Method: POST
+  ListContacts:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs10.x
+      CodeUri: ../crud_code
+      Handler: index.list
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref ContactTable
+      Events:
+        Route:
+          Type: Api
+          Properties:
+            Path: /contacts
+            Method: GET

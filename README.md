@@ -1,6 +1,32 @@
-# CloudFormation Deployment Strategies
+  # CloudFormation Deployment Strategies
 
-## Lambda Versioning
+## What does SAM do?
+
+SAM uses lambda aliases and CodeDeploy to roll out changes to lambda functions, which can be rolled back on test failures or cloudwatch alarms.
+
+Take a look at [Safe Lambda deployments](https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst).
+
+## CDK Equivalent
+
+```bash
+aws cloudformation package \
+  --template-file ./examples/sam-contacts.yml \
+  --output-template-file ./sam-contacts-out.yml \
+  --s3-bucket jeffws-templates \
+  --profile jeff
+
+aws cloudformation deploy \
+  --template-file ./sam-contacts-out.yml \
+  --stack-name SamContacts \
+  --capabilities CAPABILITY_IAM \
+  --profile jeff
+```
+
+## New Concepts
+
+* Locking API Gateway lambda integrations to a specific version of a lambda function, and using the stage/deployment canary settings to roll out the API & lambda changes together.
+
+### Lambda Versioning
 
 Create a lambda function and a new version whenever the code changes. If the code is the same, the source hash will be the same, and the asset will not be uploaded. The removal policy prevents old versions from being deleted when the code changes.
 
