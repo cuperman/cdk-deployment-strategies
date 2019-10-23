@@ -1,14 +1,12 @@
-#!/usr/bin/env node
-import 'source-map-support/register';
 import path = require('path');
-import { Stack, Construct, StackProps, App } from '@aws-cdk/core';
+import { Stack, Construct, StackProps } from '@aws-cdk/core';
 import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Function, Runtime, Code, Alias } from '@aws-cdk/aws-lambda';
 import { RestApi, LambdaIntegration } from '@aws-cdk/aws-apigateway';
 import { LambdaApplication, LambdaDeploymentGroup, LambdaDeploymentConfig } from '@aws-cdk/aws-codedeploy';
 
-class ContactsApiStack extends Stack {
+export class ContactsApiStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -61,6 +59,3 @@ class ContactsApiStack extends Stack {
     contactsCollection.addMethod('GET', new LambdaIntegration(listContactsAliasLive));
   }
 }
-
-const app = new App();
-new ContactsApiStack(app, 'ContactsApiCdk');

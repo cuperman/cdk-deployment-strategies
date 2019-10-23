@@ -86,6 +86,13 @@ CloudWatch Alarms can be used to detect errors while traffic is being shifted. Y
 * Lambda errors
 * DynamoDB errors
 
+## NOTE TO SELF
+
+- [ ] Integration test examples
+- [ ] End-to-end test examples
+- [ ] Alarms
+- [ ] Deploy all the stacks and review the stack names
+
 ## What does SAM do?
 
 SAM uses lambda aliases and CodeDeploy to roll out changes to lambda functions, which can be rolled back on test failures or cloudwatch alarms.
@@ -128,13 +135,17 @@ aws cloudformation execute-change-set \
   --profile jeff
 ```
 
-### How does api key authentication work?
-
-### How are versions managed??
+**Show example of making API changes by requiring an API key**
 
 ## CDK Equivalent
 
 Run it: `cdk --profile jeff --app 'npx ts-node ./examples/cdk-contacts.ts' deploy`
+
+**Show how many resources you need to create per route**
+
+## Refactored CDK code
+
+**Show how CDK code can be refactored to reduce boilerplate code**
 
 ### Demo
 
