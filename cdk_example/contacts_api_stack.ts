@@ -1,5 +1,5 @@
 import path = require('path');
-import { Stack, Construct, StackProps, Duration } from '@aws-cdk/core';
+import { Stack, Construct, StackProps, Duration, Aws } from '@aws-cdk/core';
 import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Function, Runtime, Code, Alias } from '@aws-cdk/aws-lambda';
@@ -80,7 +80,7 @@ export class ContactsApiStack extends Stack {
         NEW_LAMBDA_VERSION: listContactsLatestVersion.functionName
       }
     });
-    listContacts.grantInvoke(testListContactsLambda);
+    listContactsLatestVersion.grantInvoke(testListContactsLambda);
 
     const testGetContactsApi = new Function(this, 'TestGetContactsApi', {
       // use CodeDeployHook_ prefix to allow default CodeDeploy role to invoke functions
