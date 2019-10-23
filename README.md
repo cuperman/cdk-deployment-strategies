@@ -1,5 +1,9 @@
 # Serverless Deployment Strategies
 
+An exploration of AWS deployment strategies for serverless applications
+
+## Questions
+
 Some interesting questions on this topic:
 
 * What are blue/green deployments?
@@ -12,7 +16,55 @@ First let's do some reading. I found this article:
 
 [https://dev.to/mostlyjason/intro-to-deployment-strategies-blue-green-canary-and-more-3a3](https://dev.to/mostlyjason/intro-to-deployment-strategies-blue-green-canary-and-more-3a3)
 
-## Blue/Green Deployments
+### What does SAM do?
+
+SAM uses lambda aliases and CodeDeploy to roll out changes to lambda functions, which can be rolled back on test failures or cloudwatch alarms.
+
+Take a look at [Safe Lambda deployments](https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst).
+
+Some questions I had about this strategy:
+
+* How are changes to the entire stack rolled out if only the lambda functions use blue/green deployments?
+* What happens if the lambda functions are rolled back, are the old lambda versions running within the new infrastructure?
+
+Let's deploy a simple SAM application and find out:
+
+```bash
+aws cloudformation "package" \
+  --template-file "./sam_example/contacts_api.yml" \
+  --output-template-file "./sam.out/contacts_api.yml" \
+  --s3-bucket "$TEMPLATE_BUCKET"
+
+aws cloudformation "deploy" \
+  --template-file "./sam.out/contacts_api.yml" \
+  --stack-name "ContactsApiSam" \
+  --capabilities "CAPABILITY_IAM"
+```
+
+Now make some changes to the entire stack, redeploy, and watch what happens:
+
+```bash
+aws cloudformation "package" \
+  --template-file "./sam_example/contacts_api.yml" \
+  --output-template-file "./sam.out/contacts_api.yml" \
+  --s3-bucket "$TEMPLATE_BUCKET"
+
+aws cloudformation "create-change-set" \
+  --template-body "file://sam.out/contacts_api.yml" \
+  --stack-name "ContactsApiSam" \
+  --capabilities "CAPABILITY_IAM" \
+  --change-set-name "ContactsApiSam-ChangeSet-1"
+
+aws cloudformation "execute-change-set" \
+  --stack-name "ContactsApiSam" \
+  --change-set-name "ContactsApiSam-ChangeSet-1"
+```
+
+## Anwsers
+
+Now we can answer some of our questions
+
+### Blue/Green Deployments
 
 Blue/green is a strategy to deploy your infrastructure and test it before toggling live traffic.
 
@@ -22,7 +74,7 @@ Blue/green is a strategy to deploy your infrastructure and test it before toggli
 [Load balancer]-.->[Code version 2 {bg:darkgreen}]
 ```
 
-## Canary
+### Canary
 
 Canary is a strategy where you expose a percentage of your live traffic to new deployments to get feedback before full rollout.
 
@@ -32,7 +84,7 @@ Canary is a strategy where you expose a percentage of your live traffic to new d
 [Load balancer]-10%>[Code version 2 {bg:darkgreen}]
 ```
 
-## Serverless Strategies
+### Serverless Strategies
 
 Imagine you have a a serverless application with an API Gateway, Lambda function backend, and DynamoDB tables. Deploying with CloudFormation and CodeDeploy will create a new undeployed API Gateway during the rollout, and use an alias to transition the traffic to the new lambda version.
 
@@ -49,7 +101,7 @@ Imagine you have a a serverless application with an API Gateway, Lambda function
 [Lambda new version {bg:darkgreen}]->[DynamoDB {bg:darkgreen}]
 ```
 
-## Detecting issues
+### Detecting issues
 
 The serverless deployment strategy above allows the following:
 
@@ -57,11 +109,11 @@ The serverless deployment strategy above allows the following:
 * Live traffic can be moved to the new lambda version gradually (while monitoring for errors)
 * New API gateway can be tested (end-to-end tests)
 
-## Rolling back
+### Rolling back
 
 The CloudFormation stack waits for the CodeDeploy Lambda deployment before deploying the API Gateway, so the change set can be reverted on any issues detected.
 
-## CodeDeploy options
+### CodeDeploy options
 
 Traffic shifting configurations:
 
@@ -86,56 +138,18 @@ CloudWatch Alarms can be used to detect errors while traffic is being shifted. Y
 * Lambda errors
 * DynamoDB errors
 
+## Implementing in CDK
+
+# You are here
+
 ## NOTE TO SELF
 
 - [ ] Integration test examples
 - [ ] End-to-end test examples
 - [ ] Alarms
 - [ ] Deploy all the stacks and review the stack names
-
-## What does SAM do?
-
-SAM uses lambda aliases and CodeDeploy to roll out changes to lambda functions, which can be rolled back on test failures or cloudwatch alarms.
-
-Take a look at [Safe Lambda deployments](https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst).
-
-```bash
-aws cloudformation package \
-  --template-file ./examples/sam-contacts.yml \
-  --output-template-file ./sam.out/sam-contacts.yml \
-  --s3-bucket jeffws-templates \
-  --profile jeff
-
-aws cloudformation deploy \
-  --template-file ./sam.out/sam-contacts.yml \
-  --stack-name ContactsApiSam \
-  --capabilities CAPABILITY_IAM \
-  --profile jeff
-```
-
-Or with change sets
-
-```bash
-aws cloudformation package \
-  --template-file ./examples/sam-contacts.yml \
-  --output-template-file ./sam.out/sam-contacts.yml \
-  --s3-bucket jeffws-templates \
-  --profile jeff
-
-aws cloudformation create-change-set \
-  --template-body file://sam.out/sam-contacts.yml \
-  --stack-name ContactsApiSam \
-  --change-set-name ContactsApiSam1 \
-  --capabilities CAPABILITY_IAM \
-  --profile jeff
-
-aws cloudformation execute-change-set \
-  --stack-name ContactsApiSam \
-  --change-set-name ContactsApiSam1 \
-  --profile jeff
-```
-
-**Show example of making API changes by requiring an API key**
+- [ ] Rollout specifics (order of operations)
+- [ ] Rollback specifics
 
 ## CDK Equivalent
 
