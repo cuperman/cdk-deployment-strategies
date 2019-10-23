@@ -234,34 +234,9 @@ npm run cdk -- --app 'npx ts-node ./cdk_example/contacts_api_app.ts' deploy
 
 ## DRYing things up in CDK
 
-# You are here
+See [cdk_example_dry](./cdk_example_dry) for an example how to reduce boilerplate code using CDK.
 
-## NOTE TO SELF
-
-- [x] Rollout specifics (order of operations)
-- [x] Integration test examples
-- [x] End-to-end test examples
-- [x] Rollback specifics
-- [x] Alarms
-- [x] Cause a rollback by triggering an alarm
-- [ ] Deploy all the stacks and review the stack names
-- [ ] Debug test examples
-- [ ] Clean up CDK policies
-
-## CDK Equivalent
-
-Run it: `cdk --profile jeff --app 'npx ts-node ./examples/cdk-contacts.ts' deploy`
-
-**Show how many resources you need to create per route**
-
-## Refactored CDK code
-
-**Show how CDK code can be refactored to reduce boilerplate code**
-
-### Demo
-
-* Updating the lambda code triggers a blue/green deploy
-* Updating the stack without code changes returns quickly without blue/green deploy
+*Note: In development*
 
 ## Alternative Strategies
 
@@ -272,3 +247,16 @@ Pros:
 
 Cons:
   * No existing automation like CodeDeploy to support an API Gateway canary deployment
+
+# TODO
+
+- [x] Rollout specifics (order of operations)
+- [x] Integration test examples
+- [x] End-to-end test examples
+- [x] Rollback specifics
+- [x] Alarms
+- [x] Cause a rollback by triggering an alarm
+- [ ] Deploy all the stacks and review the stack names
+- [ ] Debug test examples
+- [ ] DRY code example
+- [ ] Clean up CDK policies

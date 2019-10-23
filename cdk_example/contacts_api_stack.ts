@@ -1,5 +1,5 @@
 import path = require('path');
-import { Stack, Construct, StackProps } from '@aws-cdk/core';
+import { Stack, Construct, StackProps, Duration } from '@aws-cdk/core';
 import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Function, Runtime, Code, Alias } from '@aws-cdk/aws-lambda';
@@ -9,6 +9,7 @@ import {
   LambdaDeploymentGroup,
   LambdaDeploymentConfig
 } from '@aws-cdk/aws-codedeploy';
+import { Alarm, ComparisonOperator } from '@aws-cdk/aws-cloudwatch';
 
 export class ContactsApiStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -40,12 +41,30 @@ export class ContactsApiStack extends Stack {
     });
 
     const listContactsLatestVersion = listContacts.addVersion(contactsHandler.sourceHash);
+
+    const aliasName = 'live';
     const listContactsAliasLive = new Alias(this, 'ListContactsAliasLive', {
-      aliasName: 'live',
+      aliasName,
       version: listContactsLatestVersion
     });
 
-    // TODO: ALARM
+    // ALARMS
+
+    const listContactsAlarm = new Alarm(this, 'ListContactsAlarm', {
+      alarmDescription: 'Lambda Function Error > 0',
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: listContactsLatestVersion.metricErrors({
+        dimensions: {
+          Resource: `${listContacts.functionName}:${aliasName}`,
+          FunctionName: listContacts.functionName,
+          ExecutedVersion: listContactsLatestVersion.version
+        },
+        period: Duration.minutes(1),
+        statistic: 'Sum'
+      }),
+      evaluationPeriods: 2,
+      threshold: 0
+    });
 
     // TEST LAMBDAS
 
@@ -78,7 +97,7 @@ export class ContactsApiStack extends Stack {
       application: contactsApplication,
       alias: listContactsAliasLive,
       deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES,
-      alarms: [],
+      alarms: [listContactsAlarm],
       preHook: testListContactsLambda,
       postHook: testGetContactsApi
     });
