@@ -232,12 +232,6 @@ npm install
 npm run cdk -- --app 'npx ts-node ./cdk_example/contacts_api_app.ts' deploy
 ```
 
-## DRYing things up in CDK
-
-See [cdk_example_dry](./cdk_example_dry) for an example how to reduce boilerplate code using CDK.
-
-*Note: In development*
-
 ## Alternative Strategies
 
 Using API Gateway Canary settings and doing blue/green rollout of the entire REST API. The lambda integrations could point directly to a new lambda version instead of using an alias.
@@ -256,7 +250,6 @@ Cons:
 - [x] Rollback specifics
 - [x] Alarms
 - [x] Cause a rollback by triggering an alarm
+- [x] Clean up CDK policies
 - [ ] Deploy all the stacks and review the stack names
 - [ ] Debug test examples
-- [ ] DRY code example
-- [ ] Clean up CDK policies
