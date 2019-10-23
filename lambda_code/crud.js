@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const uuid = require('uuid/v4');
 
 const TABLE_NAME = process.env.TABLE_NAME;
-const CODE_VERSION = 'v1';
+const CODE_VERSION = 'v2';
 
 function jsonResponse(statusCode, data, event, context) {
   const requestContext = event.requestContext || {};
@@ -28,9 +28,9 @@ function jsonResponse(statusCode, data, event, context) {
 
 exports.create = async (event, context) => {
   const attributes = event.body ? JSON.parse(event.body) : {};
-  
+
   const documentClient = new AWS.DynamoDB.DocumentClient();
-  
+
   const params = {
     TableName: TABLE_NAME,
     Item: Object.assign({}, attributes, {
@@ -39,21 +39,21 @@ exports.create = async (event, context) => {
       updatedAt: Date.now()
     })
   };
-  
+
   const data = await documentClient.put(params).promise();
-  
+
   return jsonResponse(201, data, event, context);
 };
 
 exports.list = async (event, context) => {
   const documentClient = new AWS.DynamoDB.DocumentClient();
-  
+
   const params = {
     TableName: TABLE_NAME
   };
-  
+
   const data = await documentClient.scan(params).promise();
-  
+
   return jsonResponse(200, data.Items, event, context);
 };
 
@@ -62,16 +62,16 @@ exports.get = async (event, context) => {
   const id = pathParams.id;
 
   const documentClient = new AWS.DynamoDB.DocumentClient();
-  
+
   const params = {
     TableName: TABLE_NAME,
     Key: {
       id
     }
   };
-  
+
   const data = await documentClient.get(params).promise();
-  
+
   return jsonResponse(200, data.Item, event, context);
 };
 
@@ -81,7 +81,7 @@ exports.update = async (event, context) => {
   const newAttributes = event.body ? JSON.parse(event.body) : {};
 
   const documentClient = new AWS.DynamoDB.DocumentClient();
-  
+
   const getParams = {
     TableName: TABLE_NAME,
     Key: {
@@ -97,9 +97,9 @@ exports.update = async (event, context) => {
       updatedAt: Date.now()
     })
   };
-  
+
   const putData = await documentClient.put(putParams).promise();
-  
+
   return jsonResponse(200, putData, event, context);
 };
 
@@ -108,15 +108,15 @@ exports.delete = async (event, context) => {
   const id = pathParams.id;
 
   const documentClient = new AWS.DynamoDB.DocumentClient();
-  
+
   var params = {
-    TableName : TABLE_NAME,
+    TableName: TABLE_NAME,
     Key: {
       id
     }
   };
-  
+
   const data = await documentClient.delete(params).promise();
-  
+
   return jsonResponse(200, data, event, context);
 };

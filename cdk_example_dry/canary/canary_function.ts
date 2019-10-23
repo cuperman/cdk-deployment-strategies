@@ -1,6 +1,10 @@
 import { Construct } from '@aws-cdk/core';
 import { Function, Alias, FunctionProps } from '@aws-cdk/aws-lambda';
-import { LambdaApplication, LambdaDeploymentGroup, ILambdaDeploymentConfig } from '@aws-cdk/aws-codedeploy';
+import {
+  LambdaApplication,
+  LambdaDeploymentGroup,
+  ILambdaDeploymentConfig
+} from '@aws-cdk/aws-codedeploy';
 
 export interface VersionedFunctionProps extends FunctionProps {
   readonly versionName: string;
@@ -22,7 +26,7 @@ export class CanaryFunction extends Function {
     const { versionName, aliasName, lambdaApplication, deploymentConfig } = props;
 
     const lambdaFunctionVersion = this.addVersion(versionName);
-    
+
     this.canaryAlias = new Alias(this, 'Alias', {
       aliasName,
       version: lambdaFunctionVersion

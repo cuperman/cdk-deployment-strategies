@@ -6,7 +6,7 @@ import { Runtime, Code } from '@aws-cdk/aws-lambda';
 import { RestApi, LambdaIntegration } from '@aws-cdk/aws-apigateway';
 import { LambdaDeploymentConfig } from '@aws-cdk/aws-codedeploy';
 
-import { CanaryDeploymentGroup } from './canary/canary-deployment-group';
+import { CanaryDeploymentGroup } from './canary/canary_deployment_group';
 
 export class ContactsApiStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -46,7 +46,7 @@ export class ContactsApiStack extends Stack {
     // REST API
 
     const contactsApi = new RestApi(this, 'ContactsApiCdk');
-    
+
     const contactsCollection = contactsApi.root.addResource('contacts');
     contactsCollection.addMethod('GET', new LambdaIntegration(listContacts.canaryAlias));
   }

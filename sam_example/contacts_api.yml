@@ -23,7 +23,7 @@ Resources:
       DeploymentPreference:
         Type: Canary10Percent5Minutes
         Alarms:
-          - !Ref ListContactsErrorsAlarm
+          - !Ref ListContactsAlarm
         Hooks:
           PreTraffic: !Ref TestListContactsLambda
           PostTraffic: !Ref TestGetContactsApi
@@ -35,7 +35,7 @@ Resources:
           Properties:
             Method: GET
             Path: /contacts
-  ListContactsErrorsAlarm:
+  ListContactsAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: Lambda Function Error > 0
@@ -60,6 +60,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # Use 'CodeDeployHook_' prefix to allow default CodeDeploy role to invoke
+      # see Managed Policy: AWSCodeDeployRoleForLambda
       FunctionName: CodeDeployHook_TestListContactsLambda_SAM
       CodeUri: ../lambda_code
       Handler: test_lambda.testListContacts
@@ -74,6 +75,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       # Use 'CodeDeployHook_' prefix to allow default CodeDeploy role to invoke
+      # see Managed Policy: AWSCodeDeployRoleForLambda
       FunctionName: CodeDeployHook_TestGetContactsApi_SAM
       CodeUri: ../lambda_code
       Handler: test_api.testGetContacts

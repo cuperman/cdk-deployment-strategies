@@ -1,7 +1,11 @@
 import { Construct } from '@aws-cdk/core';
-import { LambdaApplication, ILambdaDeploymentConfig, LambdaApplicationProps } from '@aws-cdk/aws-codedeploy';
+import {
+  LambdaApplication,
+  ILambdaDeploymentConfig,
+  LambdaApplicationProps
+} from '@aws-cdk/aws-codedeploy';
 
-import { VersionedFunctionProps, CanaryFunction } from './canary-function';
+import { VersionedFunctionProps, CanaryFunction } from './canary_function';
 
 export interface CanaryDeploymentGroupProps extends LambdaApplicationProps {
   readonly canaryAliasName: string;

@@ -180,6 +180,58 @@ LatestVersionErrorMetricGreaterThanZeroAlarm:
 
 ## Implementing in CDK
 
+In CDK you can do the same thing. Define the following resources:
+
+* **S3 Asset** to upload lambda code bundle to S3 and to detect when there are changes (via `sourceHash`)
+* **Lambda Function** that uses the code bundle deployed to S3
+* **Lambda Version** that changes whenever the code changes (using `sourceHash`)
+* **Lambda Alias** required for blue/green deployments
+* **CodeBuild Deployment Group** to manage the blue/green deployments (using the alias)
+
+```typescript
+const lambdaCode = new Asset(this, 'LambdaCode', {
+  path: path.join(__dirname, 'path/to/lambda/code')
+});
+
+const lambdaFunction = new Function(this, 'LambdaFunction', {
+  code: Code.fromBucket(lambdaCode.bucket, lambdaCode.s3ObjectKey),
+  // more lambda function props ...
+});
+
+const lambdaVersion = lambdaFunction.addVersion(lambdaCode.sourceHash);
+
+const lambdaVersionAlias = new Alias(this, 'LambdaVersionAlias', {
+  aliasName: 'live',
+  version: lambdaVersion
+});
+
+const lambdaApplication = new LambdaApplication(this, 'LambdaApplication');
+
+new LambdaDeploymentGroup(this, 'LambdaDeploymentGroup', {
+  application: lambdaApplication,
+  alias: lambdaVersionAlias,
+  deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
+});
+```
+
+Just be sure to reference the alias in your API Gateway Lambda Proxy Integrations:
+
+```typescript
+const restApi = new RestApi(this, 'RestApi');
+
+restApi.root.addMethod('GET', new LambdaIntegration(lambdaVersionAlias));
+```
+
+You can deploy the CDK stack with the following command:
+
+```bash
+# if you haven't installed the dependencies, do that with npm
+npm install 
+
+# deploy with CDK
+npm run cdk -- --app 'npx ts-node ./cdk_example/contacts_api_app.ts' deploy
+```
+
 ## DRYing things up in CDK
 
 # You are here
@@ -190,10 +242,11 @@ LatestVersionErrorMetricGreaterThanZeroAlarm:
 - [x] Integration test examples
 - [x] End-to-end test examples
 - [x] Rollback specifics
-- [ ] Alarms
-- [ ] Cause a rollback by triggering an alarm
+- [x] Alarms
+- [x] Cause a rollback by triggering an alarm
 - [ ] Deploy all the stacks and review the stack names
 - [ ] Debug test examples
+- [ ] Clean up CDK policies
 
 ## CDK Equivalent
 
@@ -210,33 +263,12 @@ Run it: `cdk --profile jeff --app 'npx ts-node ./examples/cdk-contacts.ts' deplo
 * Updating the lambda code triggers a blue/green deploy
 * Updating the stack without code changes returns quickly without blue/green deploy
 
-## New Concepts
+## Alternative Strategies
 
-* Locking API Gateway lambda integrations to a specific version of a lambda function, and using the stage/deployment canary settings to roll out the API & lambda changes together.
+Using API Gateway Canary settings and doing blue/green rollout of the entire REST API. The lambda integrations could point directly to a new lambda version instead of using an alias.
 
-### Lambda Versioning
+Pros:
+  * Less compatibility issues when making API + Lambda changes in a single deployment
 
-Create a lambda function and a new version whenever the code changes. If the code is the same, the source hash will be the same, and the asset will not be uploaded. The removal policy prevents old versions from being deleted when the code changes.
-
-```typescript
-const myAsset = new Asset(this, 'MyAsset', {
-  path: path.join(__dirname, '../lambda')
-});
-
-const myFunction = new Function(this, 'MyFunction', {
-  runtime: Runtime.NODEJS_10_X,
-  code: Code.fromBucket(myAsset.bucket, myAsset.s3ObjectKey),
-  handler: 'hello.handler'
-});
-
-const myVersion = myFunction.addVersion(myAsset.sourceHash);
-(
-  myVersion.node.findChild('Resource') as CfnVersion
-).applyRemovalPolicy(RemovalPolicy.RETAIN);
-```
-
-*Note: If only the function properties change, then the latest version does not get updated.  Need to investigate if aliases solve this problem, or if the properties hash should be included in the version name.*
-
-See [my-stack.yml](./cfn/my-stack.yml)
-
-Run it: `cdk --profile jeff --app 'npx ts-node ./examples/my-stack.ts' deploy`
+Cons:
+  * No existing automation like CodeDeploy to support an API Gateway canary deployment
