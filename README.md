@@ -138,18 +138,62 @@ CloudWatch Alarms can be used to detect errors while traffic is being shifted. Y
 * Lambda errors
 * DynamoDB errors
 
+*Note: I don't completely understand the example in the [Safe Lambda deployments](https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst#traffic-shifting-using-codedeploy) doc*
+
+```yaml
+# Why do we monitor both the alias and new version?
+AliasErrorMetricGreaterThanZeroAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmDescription: Lambda Function Error > 0
+    ComparisonOperator: GreaterThanThreshold
+    Dimensions:
+      - Name: Resource
+        Value: !Sub "${MyLambdaFunction}:live"
+      - Name: FunctionName
+        Value: !Ref MyLambdaFunction
+    EvaluationPeriods: 2
+    MetricName: Errors
+    Namespace: AWS/Lambda
+    Period: 60
+    Statistic: Sum
+    Threshold: 0
+LatestVersionErrorMetricGreaterThanZeroAlarm:
+  Type: "AWS::CloudWatch::Alarm"
+  Properties:
+    AlarmDescription: Lambda Function Error > 0
+    ComparisonOperator: GreaterThanThreshold
+    Dimensions:
+      - Name: Resource
+        Value: !Sub "${MyLambdaFunction}:live"
+      - Name: FunctionName
+        Value: !Ref MyLambdaFunction
+      - Name: ExecutedVersion
+        Value: !GetAtt MyLambdaFunction.Version.Version
+    EvaluationPeriods: 2
+    MetricName: Errors
+    Namespace: AWS/Lambda
+    Period: 60
+    Statistic: Sum
+    Threshold: 0
+```
+
 ## Implementing in CDK
+
+## DRYing things up in CDK
 
 # You are here
 
 ## NOTE TO SELF
 
-- [ ] Integration test examples
-- [ ] End-to-end test examples
+- [x] Rollout specifics (order of operations)
+- [x] Integration test examples
+- [x] End-to-end test examples
+- [x] Rollback specifics
 - [ ] Alarms
+- [ ] Cause a rollback by triggering an alarm
 - [ ] Deploy all the stacks and review the stack names
-- [ ] Rollout specifics (order of operations)
-- [ ] Rollback specifics
+- [ ] Debug test examples
 
 ## CDK Equivalent
 

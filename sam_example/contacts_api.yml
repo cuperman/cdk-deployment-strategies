@@ -22,6 +22,8 @@ Resources:
       AutoPublishAlias: live
       DeploymentPreference:
         Type: Canary10Percent5Minutes
+        Alarms:
+          - !Ref ListContactsErrorsAlarm
         Hooks:
           PreTraffic: !Ref TestListContactsLambda
           PostTraffic: !Ref TestGetContactsApi
@@ -33,6 +35,27 @@ Resources:
           Properties:
             Method: GET
             Path: /contacts
+  ListContactsErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Sub '${ListContacts}:live'
+        - Name: FunctionName
+          Value: !Ref ListContacts
+        - Name: ExecutedVersion
+          # Note:
+          #   - ListContacts.Version is a reference to the new Lambda version
+          #   - The next .Version is the attribute for GetAtt
+          Value: !GetAtt ListContacts.Version.Version
+      EvaluationPeriods: 2
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 60
+      Statistic: Sum
+      Threshold: 0
   TestListContactsLambda:
     Type: AWS::Serverless::Function
     Properties:
