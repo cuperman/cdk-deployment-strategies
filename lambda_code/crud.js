@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const uuid = require('uuid/v4');
 
 const TABLE_NAME = process.env.TABLE_NAME;
-const CODE_VERSION = 'v2';
+const CODE_VERSION = 'v1';
 
 function jsonResponse(statusCode, data, event, context) {
   const requestContext = event.requestContext || {};
