@@ -251,5 +251,5 @@ Cons:
 - [x] Alarms
 - [x] Cause a rollback by triggering an alarm
 - [x] Clean up CDK policies
-- [ ] Deploy all the stacks and review the stack names
+- [x] Deploy all the stacks and review the stack names
 - [ ] Debug test examples

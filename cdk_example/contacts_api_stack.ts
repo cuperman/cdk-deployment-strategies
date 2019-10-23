@@ -39,6 +39,7 @@ export class ContactsApiStack extends Stack {
         TABLE_NAME: contacts.tableName
       }
     });
+    contacts.grantReadWriteData(listContacts);
 
     const listContactsLatestVersion = listContacts.addVersion(contactsHandler.sourceHash);
 
@@ -79,6 +80,7 @@ export class ContactsApiStack extends Stack {
         NEW_LAMBDA_VERSION: listContactsLatestVersion.functionName
       }
     });
+    listContacts.grantInvoke(testListContactsLambda);
 
     const testGetContactsApi = new Function(this, 'TestGetContactsApi', {
       // use CodeDeployHook_ prefix to allow default CodeDeploy role to invoke functions
@@ -102,11 +104,8 @@ export class ContactsApiStack extends Stack {
       postHook: testGetContactsApi
     });
 
-    // POLICIES
-
     listContactsDeploymentGroup.grantPutLifecycleEventHookExecutionStatus(testListContactsLambda);
     listContactsDeploymentGroup.grantPutLifecycleEventHookExecutionStatus(testGetContactsApi);
-    listContacts.grantInvoke(testListContactsLambda);
 
     // REST API
 
