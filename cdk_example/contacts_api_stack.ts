@@ -25,6 +25,10 @@ export class ContactsApiStack extends Stack {
       billingMode: BillingMode.PAY_PER_REQUEST
     });
 
+    // REST API
+
+    const contactsApi = new RestApi(this, 'ContactsApiCdk');
+
     // LAMBDA
 
     const contactsHandler = new Asset(this, 'ContactsHandler', {
@@ -88,7 +92,10 @@ export class ContactsApiStack extends Stack {
       functionName: 'CodeDeployHook_TestGetContactsApi_CDK',
       runtime: Runtime.NODEJS_8_10,
       code: Code.fromBucket(contactsHandler.bucket, contactsHandler.s3ObjectKey),
-      handler: 'test_api.testGetContacts'
+      handler: 'test_api.testGetContacts',
+      environment: {
+        REST_API_URL: `https://${contactsApi.restApiId}.${this.region}.amazonaws.com/prod`
+      }
     });
 
     // LAMBDA DEPLOYMENT
@@ -107,9 +114,7 @@ export class ContactsApiStack extends Stack {
     listContactsDeploymentGroup.grantPutLifecycleEventHookExecutionStatus(testListContactsLambda);
     listContactsDeploymentGroup.grantPutLifecycleEventHookExecutionStatus(testGetContactsApi);
 
-    // REST API
-
-    const contactsApi = new RestApi(this, 'ContactsApiCdk');
+    // REST API ROUTES
 
     const contactsCollection = contactsApi.root.addResource('contacts');
     contactsCollection.addMethod('GET', new LambdaIntegration(listContactsAliasLive));
