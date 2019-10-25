@@ -241,15 +241,3 @@ Pros:
 
 Cons:
   * No existing automation like CodeDeploy to support an API Gateway canary deployment
-
-# TODO
-
-- [x] Rollout specifics (order of operations)
-- [x] Integration test examples
-- [x] End-to-end test examples
-- [x] Rollback specifics
-- [x] Alarms
-- [x] Cause a rollback by triggering an alarm
-- [x] Clean up CDK policies
-- [x] Deploy all the stacks and review the stack names
-- [ ] Debug test examples
