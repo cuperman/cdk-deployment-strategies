@@ -101,16 +101,16 @@ Imagine you have a a serverless application with an API Gateway, Lambda function
 ```yuml
 // YUML
 // {type:class}
-[API Gateway deployment {bg:blue}]->[Lambda alias {bg:blue}]
+[Deployed API Gateway {bg:blue}]->[Lambda alias {bg:blue}]
 [Lambda alias {bg:blue}]->[Lambda version {bg:blue}]
 [Lambda version {bg:blue}]->[DynamoDB {bg:darkgreen}]
-[undeployed API Gateway {bg:darkgreen}]->[Lambda alias {bg:blue}]
-[Lambda alias {bg:blue}]->[Lambda new version {bg:darkgreen}]
-[Lambda new version {bg:darkgreen}]->[DynamoDB {bg:darkgreen}]
+[Undeployed API Gateway {bg:darkgreen}]->[Lambda alias {bg:blue}]
+[Lambda alias {bg:blue}]->[New Lambda version {bg:darkgreen}]
+[New Lambda version {bg:darkgreen}]->[DynamoDB {bg:darkgreen}]
 ```
 
 <!-- rendered yuml -->
-<img src="https://yuml.me/diagram/dir:td/class/[API Gateway deployment {bg:blue}]->[Lambda alias {bg:blue}],[Lambda alias {bg:blue}]->[Lambda version {bg:blue}],[Lambda version {bg:blue}]->[DynamoDB {bg:green}],[undeployed API Gateway {bg:green}]->[Lambda alias {bg:blue}],[Lambda alias {bg:blue}]->[Lambda new version {bg:green}],[Lambda new version {bg:green}]->[DynamoDB {bg:green}]"/>
+<img src="https://yuml.me/diagram/dir:td/class/[Deployed API Gateway {bg:blue}]->[Lambda alias {bg:blue}],[Lambda alias {bg:blue}]->[Lambda version {bg:blue}],[Lambda version {bg:blue}]->[DynamoDB {bg:green}],[Undeployed API Gateway {bg:green}]->[Lambda alias {bg:blue}],[Lambda alias {bg:blue}]->[New Lambda version {bg:green}],[New Lambda version {bg:green}]->[DynamoDB {bg:green}]"/>
 
 ### Detecting issues
 
