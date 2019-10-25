@@ -68,19 +68,29 @@ Now we can answer some of our questions
 
 Blue/green is a strategy to deploy your infrastructure and test it before toggling live traffic.
 
-<img src="https://yuml.me/diagram/dir:td/class/
-  [Load balancer]->[Code version 1 {bg:blue}],
-  [Load balancer]-.->[Code version 2 {bg:green}]
-"/>
+```yuml
+// YUML
+// {type:class}
+[Load balancer]->[Code version 1 {bg:blue}]
+[Load balancer]-.->[Code version 2 {bg:darkgreen}]
+```
+
+<!-- rendered yuml -->
+<img src="https://yuml.me/diagram/dir:td/class/[Load balancer]->[Code version 1 {bg:blue}],[Load balancer]-.->[Code version 2 {bg:green}]"/>
 
 ### Canary
 
 Canary is a strategy where you expose a percentage of your live traffic to new deployments to get feedback before full rollout.
 
-<img src="https://yuml.me/diagram/dir:td/class/
-  [Load balancer]-90>[Code version 1 {bg:blue}],
-  [Load balancer]-10>[Code version 2 {bg:green}]
-"/>
+```yuml
+// YUML
+// {type:class}
+[Load balancer]-90>[Code version 1 {bg:blue}]
+[Load balancer]-10>[Code version 2 {bg:darkgreen}]
+```
+
+<!-- rendered yuml -->
+<img src="https://yuml.me/diagram/dir:td/class/[Load balancer]-90>[Code version 1 {bg:blue}],[Load balancer]-10>[Code version 2 {bg:green}]"/>
 
 ### Serverless Strategies
 
@@ -88,14 +98,19 @@ Imagine you have a a serverless application with an API Gateway, Lambda function
 
 *Pretty sure this is how it works, we should confirm*
 
-<img src="https://yuml.me/diagram/dir:td/class/
-  [API Gateway deployment {bg:blue}]->[Lambda alias {bg:blue}],
-  [Lambda alias {bg:blue}]->[Lambda version {bg:blue}],
-  [Lambda version {bg:blue}]->[DynamoDB {bg:green}],
-  [undeployed API Gateway {bg:green}]->[Lambda alias {bg:blue}],
-  [Lambda alias {bg:blue}]->[Lambda new version {bg:green}],
-  [Lambda new version {bg:green}]->[DynamoDB {bg:green}]
-"/>
+```yuml
+// YUML
+// {type:class}
+[API Gateway deployment {bg:blue}]->[Lambda alias {bg:blue}]
+[Lambda alias {bg:blue}]->[Lambda version {bg:blue}]
+[Lambda version {bg:blue}]->[DynamoDB {bg:darkgreen}]
+[undeployed API Gateway {bg:darkgreen}]->[Lambda alias {bg:blue}]
+[Lambda alias {bg:blue}]->[Lambda new version {bg:darkgreen}]
+[Lambda new version {bg:darkgreen}]->[DynamoDB {bg:darkgreen}]
+```
+
+<!-- rendered yuml -->
+<img src="https://yuml.me/diagram/dir:td/class/[API Gateway deployment {bg:blue}]->[Lambda alias {bg:blue}],[Lambda alias {bg:blue}]->[Lambda version {bg:blue}],[Lambda version {bg:blue}]->[DynamoDB {bg:green}],[undeployed API Gateway {bg:green}]->[Lambda alias {bg:blue}],[Lambda alias {bg:blue}]->[Lambda new version {bg:green}],[Lambda new version {bg:green}]->[DynamoDB {bg:green}]"/>
 
 ### Detecting issues
 
